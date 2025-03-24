@@ -1,0 +1,41 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "earth"
+    },
+    {
+      "id": 1,
+      "name": "jupiter"
+    },
+    {
+      "id": 2,
+      "name": "mars"
+    },
+    {
+      "id": 3,
+      "name": "mercury"
+    },
+    {
+      "id": 4,
+      "name": "neptune"
+    },
+    {
+      "id": 5,
+      "name": "saturn"
+    },
+    {
+      "id": 6,
+      "name": "uranus"
+    },
+    {
+      "id": 7,
+      "name": "venus"
+    }
+  ],
+  "info": {
+    "year": 2025,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}
