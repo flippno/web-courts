@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import { MindARThree } from 'mindar-image-three';
+import { setWasmPath, loadTFLiteModel } from '@tensorflow/tfjs-tflite';
 
 // Load GLTF model function
 import { loadGLTF } from './loader.js';
 
 // Set the WASM path for tfjs-tflite before loading your model
-tf.tflite.setWasmPath('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@latest/dist/');
+setWasmPath('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@latest/dist/');
 
 // Initialize MindARThree
 const mindarThree = new MindARThree({
@@ -42,10 +43,12 @@ for (const [key, model] of Object.entries(planets)) {
 const p = document.getElementById("planet");
 p.style.display = "none";
 
-// Load TFLite model
-const tfliteModel = await tflite.loadTFLiteModel("./model.tflite");
+// Load the TFLite model
+const loadModel = async () => {
+  const tfliteModel = await loadTFLiteModel("./model.tflite");
+  return tfliteModel;
+};
 
-// Start function
 const start = async () => {
   await mindarThree.start();
   renderer.setAnimationLoop(() => {
@@ -87,22 +90,17 @@ const start = async () => {
 
 // Parse YOLO output function
 const parseYOLOOutput = (output) => {
-  // Convert output tensor to array
   const data = output.dataSync();
   const detections = [];
-
-  // Loop through detections
   for (let i = 0; i < data.length; i += 6) {
     const classIndex = data[i];
     const score = data[i + 1];
     const className = getClassName(classIndex);
     detections.push({ class: className, score });
   }
-
   return detections;
 };
 
-// Map class index to planet name
 const getClassName = (index) => {
   const classMap = [
     'venus', 'saturn', 'earth', 'jupiter',
@@ -111,16 +109,19 @@ const getClassName = (index) => {
   return classMap[index] || "unknown";
 };
 
-// Planet button click event
 document.getElementById("planet").addEventListener("click", () => {
   for (const planet in planets) {
     planets[planet].scene.visible = (p.innerText.toLowerCase() === planet);
   }
 });
 
-// Start and stop buttons
 document.getElementById("startButton").addEventListener("click", start);
 document.getElementById("stopButton").addEventListener("click", () => {
   mindarThree.stop();
   mindarThree.renderer.setAnimationLoop(null);
 });
+
+(async () => {
+  const tfliteModel = await loadModel();
+  // Use tfliteModel in your detection function, e.g., assign to a global variable
+})();
