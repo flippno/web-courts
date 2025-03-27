@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { MindARThree } from 'mindar-image-three';
+import { setWasmPath, loadTFLiteModel} from 'tfjs-tflite'
 
 // Load GLTF model function
 import { loadGLTF } from './loader.js';
