@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planet Detection with AR</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Load TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+
+  <!-- Load TensorFlow.js WASM Backend (No need to manually specify .wasm) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script>
+
+  <!-- Load TensorFlow.js TFLite -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.4/dist/tf-tflite.min.js"></script>
+
+  <!-- Use the recommended MindAR production build for Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "mindar-image-three":"https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
+      }
+    }
+    </script>
+  <!-- A-Frame if you need it -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.2.0"></script>
+  <!-- Your main JS module -->
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <h1>Planet Detection with AR</h1>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
+  <div id="ar-container"></div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log("Service Worker Registered"));
+    }
+  </script>
+</body>
+</html>
