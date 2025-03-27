@@ -1,53 +1,125 @@
-// File: main.js (Handles Model Loading & Object Detection)
+import * as THREE from 'three';
+import { MindARThree } from 'mindar-image-three';
+import * as tf from '@tensorflow/tfjs';
+import * as tflite from '@tensorflow/tfjs-tflite';
 
-// Ensure WebGL is used for TensorFlow.js
-tf.setBackend('webgl');
+// Load GLTF model function
+import { loadGLTF } from './loader.js';
 
-let model;
-async function loadModel() {
-    console.log("Initializing TensorFlow.js...");
+// Initialize MindARThree
+const mindarThree = new MindARThree({
+  container: document.querySelector("#container"),
+  imageTargetSrc: "./assets/targets/planets.mind"
+});
 
-    // Set TensorFlow.js to use WASM
-    await tf.setBackend('wasm');
-    await tf.ready(); 
+const {renderer, scene, camera} = mindarThree;
+const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+scene.add(light);
 
-    console.log("TensorFlow.js WASM backend ready!");
+// Load 3D models
+const planets = {
+  earth: await loadGLTF('../../assets/models/earth/scene.gltf'),
+  jupiter: await loadGLTF('../../assets/models/jupiter/scene.gltf'),
+  mars: await loadGLTF('../../assets/models/mars/scene.gltf'),
+  mercury: await loadGLTF('../../assets/models/mercury/scene.gltf'),
+  neptune: await loadGLTF('../../assets/models/neptune/scene.gltf'),
+  saturn: await loadGLTF('../../assets/models/saturn/scene.gltf'),
+  uranus: await loadGLTF('../../assets/models/uranus/scene.gltf'),
+  venus: await loadGLTF('../../assets/models/venus/scene.gltf'),
+};
 
-    // Load the TFLite model
-    model = await tflite.loadTFLiteModel('models/planets_model.tflite');
-    console.log("TFLite Model Loaded Successfully!");
+const anchors = {};
+let index = 0;
+for (const [key, model] of Object.entries(planets)) {
+  model.scene.scale.set(0.3, 0.3, 0.3);
+  model.scene.position.set(0, -0.4, 0);
+  model.scene.visible = false;
+  anchors[key] = mindarThree.addAnchor(index++);
+  anchors[key].group.add(model.scene);
 }
 
-loadModel();
+const p = document.getElementById("planet");
+p.style.display = "none";
 
-// Function to make predictions
-async function detectObjects(imageData) {
-  if (!model) return;
-  
-  let imgTensor = tf.browser.fromPixels(imageData)
-    .resizeBilinear([224, 224])
-    .toFloat()
-    .div(255)
-    .expandDims(0);
-  
-  let predictions = model.predict(imgTensor);
-  let scores = predictions.dataSync();
-  let detectedPlanets = [];
-  
-  scores.forEach((score, i) => {
-    if (score > 0.5) detectedPlanets.push(labels[i]);
+// Load TFLite model
+const tfliteModel = await tflite.loadTFLiteModel("./model.tflite");
+
+// Start function
+const start = async () => {
+  await mindarThree.start();
+  renderer.setAnimationLoop(() => {
+    renderer.render(scene, camera);
   });
-  return detectedPlanets;
-}
 
-// Function to update AR Scene
-function showARModel(planets) {
-  let arContainer = document.getElementById("ar-container");
-  arContainer.innerHTML = "";
-  planets.forEach(planet => {
-    let newEntity = document.createElement("a-entity");
-    newEntity.setAttribute("gltf-model", `#${planet}-model`);
-    newEntity.setAttribute("animation", "property: scale; from: 0 0 0; to: 0.5 0.5 0.5; dur: 500");
-    arContainer.appendChild(newEntity);
-  });
-}
+  const video = mindarThree.video;
+  let skipCount = 0;
+
+  const detect = async () => {
+    if (skipCount < 10) {
+      skipCount++;
+      requestAnimationFrame(detect);
+      return;
+    }
+    skipCount = 0;
+
+    // Run inference
+    const inputTensor = tf.browser.fromPixels(video).expandDims(0);
+    const output = await tfliteModel.predict(inputTensor);
+    inputTensor.dispose();
+
+    // Parse YOLO output (bounding boxes, classes, scores)
+    const detections = parseYOLOOutput(output);
+
+    for (const detection of detections) {
+      if (detection.score >= 0.75) {
+        console.log(`${detection.class}, ${detection.score.toFixed(2)}`);
+        p.style.display = "block";
+        p.innerHTML = detection.class;
+      }
+    }
+
+    requestAnimationFrame(detect);
+  };
+
+  requestAnimationFrame(detect);
+};
+
+// Parse YOLO output function
+const parseYOLOOutput = (output) => {
+  // Convert output tensor to array
+  const data = output.dataSync();
+  const detections = [];
+
+  // Loop through detections
+  for (let i = 0; i < data.length; i += 6) {
+    const classIndex = data[i];
+    const score = data[i + 1];
+    const className = getClassName(classIndex);
+    detections.push({ class: className, score });
+  }
+
+  return detections;
+};
+
+// Map class index to planet name
+const getClassName = (index) => {
+  const classMap = [
+    'venus', 'saturn', 'earth', 'jupiter',
+    'mars', 'mercury', 'neptune', 'uranus'
+  ];
+  return classMap[index] || "unknown";
+};
+
+// Planet button click event
+document.getElementById("planet").addEventListener("click", () => {
+  for (const planet in planets) {
+    planets[planet].scene.visible = (p.innerText.toLowerCase() === planet);
+  }
+});
+
+// Start and stop buttons
+document.getElementById("startButton").addEventListener("click", start);
+document.getElementById("stopButton").addEventListener("click", () => {
+  mindarThree.stop();
+  mindarThree.renderer.setAnimationLoop(null);
+});

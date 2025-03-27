@@ -1,44 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Planet Detection with AR</title>
-  <link rel="stylesheet" href="styles.css" />
-  <!-- Load TensorFlow.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YOLOv8 + MindAR</title>
 
-  <!-- Load TensorFlow.js WASM Backend (No need to manually specify .wasm) -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script>
-
-  <!-- Load TensorFlow.js TFLite -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.4/dist/tf-tflite.min.js"></script>
-
-  <!-- Use the recommended MindAR production build for Three.js -->
+  <!-- Import maps for Three.js and MindAR -->
   <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-        "mindar-image-three":"https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
-      }
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+      "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
     }
-    </script>
-  <!-- A-Frame if you need it -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe@1.2.0"></script>
-  <!-- Your main JS module -->
-  <script type="module" src="main.js"></script>
+  }
+  </script>
+
+  <!-- TensorFlow.js and TFLite -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@latest"></script>
+
+  <!-- Main JavaScript File -->
+  <script type="module" src="./main.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #control {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
+    }
+
+    #startButton, #stopButton {
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      border: solid 1px white;
+      padding: 8px 15px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #startButton:active, #stopButton:active {
+      background: white;
+      color: black;
+    }
+
+    #planet {
+      position: absolute;
+      top: 80%;
+      left: 44%;
+      color: white;
+      text-align: center;
+      padding: 8px 15px;
+      background: rgba(0, 0, 0, 0);
+      border: solid 1px white;
+      border-radius: 8px;
+      z-index: 1000;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Planet Detection with AR</h1>
-  <video id="video" autoplay playsinline></video>
-  <canvas id="canvas"></canvas>
-  <div id="ar-container"></div>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(() => console.log("Service Worker Registered"));
-    }
-  </script>
+  <div id="control">
+    <button id="startButton">Start</button>
+    <button id="stopButton">Stop</button>
+  </div>
+  <div id="container">
+    <button type="button" id="planet"></button>
+  </div>
 </body>
 </html>
