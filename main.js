@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { MindARThree } from 'mindar-image-three';
-import { setWasmPath, loadTFLiteModel } from 'tflite'
+import { setWasmPath } from 'tflite'
 
 // Load GLTF model function
 import { loadGLTF } from './loader.js';
@@ -45,7 +45,7 @@ p.style.display = "none";
 
 // Load the TFLite model
 const loadModel = async () => {
-  const tfliteModel = await loadTFLiteModel("./model.tflite");
+  const tfliteModel = await tflite.loadTFLiteModel("./model.tflite");
   return tfliteModel;
 };
 
