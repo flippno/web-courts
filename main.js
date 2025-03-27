@@ -1,7 +1,5 @@
 import * as THREE from 'three';
 import { MindARThree } from 'mindar-image-three';
-import * as tf from '@tensorflow/tfjs';
-import * as tflite from '@tensorflow/tfjs-tflite';
 
 // Load GLTF model function
 import { loadGLTF } from './loader.js';
