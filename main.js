@@ -4,6 +4,9 @@ import { MindARThree } from 'mindar-image-three';
 // Load GLTF model function
 import { loadGLTF } from './loader.js';
 
+// Set the WASM path for tfjs-tflite before loading your model
+tf.tflite.setWasmPath('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@latest/dist/');
+
 // Initialize MindARThree
 const mindarThree = new MindARThree({
   container: document.querySelector("#container"),
