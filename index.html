@@ -1,95 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YOLOv8 + MindAR</title>
-
-  <!-- Import maps for Three.js and MindAR -->
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-        "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js",
-        "tflite": "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.4/dist/tf-tflite.min.js"
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+          "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
+        }
       }
-    }
     </script>
-
-  TensorFlow.js and TFLite
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-<!-- Adds the CPU backend -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu"></script>
-<!--
-  Import @tensorflow/tfjs-tflite
-
-  Note that we need to explicitly load dist/tf-tflite.min.js so that it can
-  locate WASM module files from their default location (dist/).
--->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.4/dist/tf-tflite.min.js"></script>
-
-  <!-- Main JavaScript File -->
-  <script type="module" src="./main.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    #container {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-    }
-
-    #control {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 100;
-    }
-
-    #startButton, #stopButton {
-      background: rgba(0, 0, 0, 0.3);
-      color: white;
-      border: solid 1px white;
-      padding: 8px 15px;
-      margin: 5px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #startButton:active, #stopButton:active {
-      background: white;
-      color: black;
-    }
-
-    #planet {
-      position: absolute;
-      top: 80%;
-      left: 44%;
-      color: white;
-      text-align: center;
-      padding: 8px 15px;
-      background: rgba(0, 0, 0, 0);
-      border: solid 1px white;
-      border-radius: 8px;
-      z-index: 1000;
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <div id="control">
-    <button id="startButton">Start</button>
-    <button id="stopButton">Stop</button>
-  </div>
-  <div id="container">
-    <button type="button" id="planet"></button>
-  </div>
-</body>
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+    <!-- Removed Teachable Machine script -->
+    <script type="module" src="./main.js"></script>
+    <style>
+      body {
+        margin: 0;
+      }
+      #container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+      #control {
+        position: fixed;
+        top: 5px;
+        left: 5px;
+        z-index: 100;
+      }
+      #startButton {
+        background: rgba(0, 0, 0, 0.3);
+        border: none;
+        color: rgb(225, 225, 225);
+      }
+      #startButton:active {
+        color: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7);
+      }
+      #stopButton {
+        margin-left: 70px;
+        background: rgba(0, 0, 0, 0.3);
+        border: none;
+        color: rgb(225, 225, 225);
+      }
+      #stopButton:active {
+        color: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7);
+      }
+      button {
+        position: absolute;
+        top: 80%;
+        left: 44%;
+        color: white;
+        text-align: center;
+        padding: 8px 15px;
+        background: transparent;
+        border: solid 1px white;
+        border-radius: 8px;
+        z-index: 1000;
+      }
+      button:active {
+        background: rgb(225, 225, 225);
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="control">
+      <button id="startButton">Start</button>
+      <button id="stopButton">Stop</button>
+    </div>
+    <div id="container">
+      <button type="button" id="planet"></button>
+    </div>
+  </body>
 </html>
