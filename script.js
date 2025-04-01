@@ -114,9 +114,11 @@ function enableCam() {
   if (hasGetUserMedia()) {
     // getUsermedia parameters.
     const constraints = {
-      video: true,
-      width: 640, 
-      height: 480 
+      video: { 
+        facingMode: { exact: "environment" }, // Forces the back camera
+        width: 640, 
+        height: 480 
+      }
     };
 
     // Activate the webcam stream.
