@@ -116,8 +116,8 @@ function enableCam() {
     const constraints = {
       video: { 
         facingMode: { exact: "environment" }, // Forces the back camera
-        width: 640, 
-        height: 480 
+        width: 480, 
+        height: 640 
       }
     };
 
@@ -226,7 +226,7 @@ async function trainAndPredict() {
   });
 
   combinedModel.summary();
-  await combinedModel.save('downloads://my-planet-model1');
+  await combinedModel.save('downloads://my-planet-model3');
   predictLoop();
 }
 
